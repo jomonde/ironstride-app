@@ -24,7 +24,8 @@ interface OnboardingFlowProps {
 interface UserData {
   age: number;
   weight: number;
-  fitnessGoal: "endurance" | "weightLoss" | "generalHealth";
+  fitnessGoal: "endurance" | "strength" | "hybrid" | "generalHealth";
+  trainingFocus: "cardio" | "strength" | "balanced";
   hrMax: number;
   zones: {
     zone1: { min: number; max: number };
@@ -44,6 +45,7 @@ export default function OnboardingFlow({
     age: 30,
     weight: 70,
     fitnessGoal: "generalHealth",
+    trainingFocus: "balanced",
     hrMax: 0,
     zones: {
       zone1: { min: 0, max: 0 },
@@ -75,6 +77,15 @@ export default function OnboardingFlow({
       const hrMax = calculateHRMax(userData.age);
       const zones = calculateZones(hrMax);
       setUserData({ ...userData, hrMax, zones });
+    }
+
+    if (step === 4) {
+      // Set training focus based on fitness goal
+      let trainingFocus = "balanced";
+      if (userData.fitnessGoal === "endurance") trainingFocus = "cardio";
+      if (userData.fitnessGoal === "strength") trainingFocus = "strength";
+      if (userData.fitnessGoal === "hybrid") trainingFocus = "balanced";
+      setUserData({ ...userData, trainingFocus });
     }
 
     if (step < 5) {
@@ -213,25 +224,43 @@ export default function OnboardingFlow({
                 <Text
                   className={`text-lg ${userData.fitnessGoal === "endurance" ? "font-medium text-rose-700" : ""}`}
                 >
-                  Endurance
+                  Endurance / Cardio
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={() =>
-                  setUserData({ ...userData, fitnessGoal: "weightLoss" })
+                  setUserData({ ...userData, fitnessGoal: "strength" })
                 }
-                className={`border rounded-lg p-4 flex-row items-center ${userData.fitnessGoal === "weightLoss" ? "border-rose-500 bg-rose-50" : "border-gray-300"}`}
+                className={`border rounded-lg p-4 flex-row items-center ${userData.fitnessGoal === "strength" ? "border-rose-500 bg-rose-50" : "border-gray-300"}`}
               >
-                {userData.fitnessGoal === "weightLoss" && (
+                {userData.fitnessGoal === "strength" && (
                   <View className="mr-2 bg-rose-500 rounded-full p-1">
                     <Check size={16} color="white" />
                   </View>
                 )}
                 <Text
-                  className={`text-lg ${userData.fitnessGoal === "weightLoss" ? "font-medium text-rose-700" : ""}`}
+                  className={`text-lg ${userData.fitnessGoal === "strength" ? "font-medium text-rose-700" : ""}`}
                 >
-                  Weight Loss
+                  Strength / Gym
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() =>
+                  setUserData({ ...userData, fitnessGoal: "hybrid" })
+                }
+                className={`border rounded-lg p-4 flex-row items-center ${userData.fitnessGoal === "hybrid" ? "border-rose-500 bg-rose-50" : "border-gray-300"}`}
+              >
+                {userData.fitnessGoal === "hybrid" && (
+                  <View className="mr-2 bg-rose-500 rounded-full p-1">
+                    <Check size={16} color="white" />
+                  </View>
+                )}
+                <Text
+                  className={`text-lg ${userData.fitnessGoal === "hybrid" ? "font-medium text-rose-700" : ""}`}
+                >
+                  Hybrid / Tactical
                 </Text>
               </TouchableOpacity>
 
